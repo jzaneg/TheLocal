@@ -1,0 +1,87 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+@{
+    //Layout = "_Layout";
+    Layout = "MainPage";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Local Spots</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <!-- Bootstrap core CSS -->
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="~/css/grayscale.min.css" rel="stylesheet">
+    <style>
+        #newAccountForm {
+            margin-left: 50%;
+            margin-right: 50%;
+        }
+        #registerPage {
+            padding-top: 150px;
+            padding-bottom: 100px;
+        }
+        html, body {
+            height: 100%;
+            min-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header class="masthead h-100 text-white text-center" id="registerPage">
+        <div class="container flex-column h-100 w-100" id="registerContainer">
+            <h1 class="my-3">@ViewData["Title"]</h1>
+
+            <div class="row my-4 mx-auto justify-content-center" id="newAccountForm">
+                <div class="col-md-4 align-items-center">
+                    <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <h4>Create a new account.</h4>
+                        <hr />
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="Input.Email"></label>
+                            <input asp-for="Input.Email" class="form-control" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Input.Password"></label>
+                            <input asp-for="Input.Password" class="form-control" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Input.ConfirmPassword"></label>
+                            <input asp-for="Input.ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </header>
+</body>
+</html>
+<!-- Bootstrap core JavaScript -->
+<script src="~/vendor/jquery/jquery.min.js"></script>
+<script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="~/js/grayscale.min.js"></script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

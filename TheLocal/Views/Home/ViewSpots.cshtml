@@ -1,0 +1,200 @@
+﻿@model LocationsModel
+
+@using TheLocal.Models
+@{
+    Layout = "~/Views/Shared/MainPage.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Local Spots</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <!-- Bootstrap core CSS -->
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="~/css/grayscale.min.css" rel="stylesheet">
+    @*<link href="~/css/viewSpots.css" rel="stylesheet">*@
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+        #map {
+            margin-top: 30px;
+            height: 570px;
+        }
+
+        #mapContainer {
+            padding-top: 150px;
+            padding-bottom: 150px;
+        }
+
+        html, body {
+            height: 100%;
+            min-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header class="masthead h-100">
+        <div class="container flex-column h-100 w-100 align-items-center">
+            <!-- Spot Info Modal -->
+            @using (Html.BeginForm())
+            {
+                <div class="modal fade" id="spotInfoModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title info-color white-text text-center" id="spotModalDesciption">Spot Description!</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            @Html.ValidationSummary(true)
+                            <fieldset>
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    @Html.AntiForgeryToken()
+
+                                    <div class="editor-label">
+                                        <label>Location Name</label>
+                                    </div>
+                                    <div class="editor-field">
+                                        <div class="editor-field">
+                                            <input class="form-control" id="LocName" type="text" readonly /> @*@Html.DisplayFor(modelItem => @item.LocationName)*@
+                                            @Html.ValidationMessageFor(model => model.LocationName)
+                                        </div>
+                                    </div>
+                                    <div class="editor-label">
+                                        <label>Location Description</label>
+                                    </div>
+                                    <div class="editor-field">
+                                        <input class="form-control" id="LocDesc" type="text" readonly />@*@Html.DisplayFor(modelItem => @item.LocationDescription)*@
+                                        @Html.ValidationMessageFor(model => model.LocationDescription)
+                                    </div>
+
+                                    <div class="editor-label">
+                                        <label>Location Type</label>
+                                    </div>
+                                    <div class="editor-field">
+                                        <input class="form-control" id="LocType" type="text" readonly />@*Html.DisplayFor(modelItem => @item.LocationType)*@
+                                        @Html.ValidationMessageFor(model => model.LocationType)
+                                    </div>
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                        </div>
+                    </div>
+                </div>
+            }
+            <!--=====DISPLAY GOOGLE MAPS=====-->
+            <div class="container-fluid" id="mapContainer">
+                <div class="card mx-3 my-3" id="map"></div>
+            </div>
+        </div>
+    </header>
+</body>
+</html>
+
+<script>
+        // Note: This example requires that you consent to location sharing when
+        // prompted by your browser. If you see the error "The Geolocation service
+        // failed.", it means you probably did not give permission for the browser to
+        // locate you.
+        var map, infoWindow;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 12
+            });
+            infoWindow = new google.maps.InfoWindow;
+            marker = new google.maps.Marker;
+            var markers = [];
+
+        //Retrieve markers from database
+        $.get("@Url.Action("GetMarkers", "UserDashboard")", function (data, status) {
+            console.log(data)
+            for (i = 0; i < data.length; i++) {
+                markers.push(new google.maps.Marker({
+                    position: { lat: data[i].latitude, lng: data[i].longitude },
+                    map: map,
+                    infoWindow: "'" + data[i].locationName + "'"
+                }));
+
+                /*Google Map Marker Click Function*/
+                google.maps.event.addListener(markers[i], 'click', (function (event) {
+                    console.log(event.latLng.lat() + ", " + event.latLng.lng());
+                    /*Bootstrap Modal Pop Up Open Code*/
+                    $("#spotInfoModal").modal('toggle');
+                    $("#Latitude").val(event.latLng.lat());
+                    $("#Longitude").val(event.latLng.lng());
+                }));
+            }
+        });
+
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var accuracy = position.coords.accuracy;
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    marker = new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        title: 'Your Location!'
+                    });
+                    /*Google Map Marker Click Function*/
+                    google.maps.event.addListener(marker, 'click', (function (marker) {
+                        return function () {
+                            /*Bootstrap Modal Pop Up Open Code*/
+                            $("#spotInfoModal").modal('toggle');
+                        }
+                    })(marker));
+
+
+                    map.setCenter(pos);
+                }, function () {
+                    handleLocationError(true, marker, map.getCenter());
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false, marker, map.getCenter());
+            }
+        }
+
+        function handleLocationError(browserHasGeolocation, marker, pos) {
+            marker.setPosition(pos);
+            marker.setContent(browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.');
+            marker.open(map);
+        }
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpEQRDLXDEV7pISA-Xb5_frat9EhMJVfc&callback=initMap">
+</script>
+<!-- Bootstrap core JavaScript -->
+<script src="~/vendor/jquery/jquery.min.js"></script>
+<script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="~/js/grayscale.min.js"></script>
+

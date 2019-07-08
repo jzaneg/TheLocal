@@ -42,7 +42,7 @@
             margin: auto auto;
         }
         /* Optional: Makes the sample page fill the window. */
-        
+
         html, body {
             height: 100%;
             min-height: 100%;
@@ -61,6 +61,11 @@
 
         #LocInfoList label {
             font-size: 12px;
+        }
+
+        .gm-style .gm-style-iw {
+            height: auto;
+            overflow-y: scroll;
         }
     </style>
 
@@ -94,28 +99,28 @@
                                         <label>Location Name</label>
                                     </div>
                                     <div class="editor-field">
-                                        <input class="form-control" type="text" />
+                                        <input class="form-control" type="text" name="LocationName" id="locationName" />
                                         @Html.ValidationMessageFor(model => model.LocationName)
                                     </div>
                                     <div class="editor-label">
                                         <label>Location Desciption</label>
                                     </div>
                                     <div class="editor-field">
-                                        <input class="form-control" type="text" />
+                                        <input class="form-control" type="text" name="LocationDescription" id="locationDescription" />
                                         @Html.ValidationMessageFor(model => model.LocationDescription)
                                     </div>
                                     <div class="editor-label" id="lat">
                                         <label>Latitude</label>
                                     </div>
                                     <div class="editor-field">
-                                        <input class="form-control" id="Latitude" type="text" readonly />
+                                        <input class="form-control" name="latitude" id="Latitude" type="text" readonly />
                                         @Html.ValidationMessageFor(model => model.Latitude)
                                     </div>
                                     <div class="editor-label" id="lng">
                                         <label>Longitude</label>
                                     </div>
                                     <div class="editor-field">
-                                        <input class="form-control" id="Longitude" type="text" readonly />
+                                        <input class="form-control" name="longitude" id="Longitude" type="text" readonly />
                                         @Html.ValidationMessageFor(model => model.Longitude)
                                     </div>
                                     <div class="editor-label">
@@ -124,14 +129,14 @@
                                     <div class="editor-field">
                                         <select class="form-control" name="LocationType" form="addLocationForm">
                                             @foreach (string options in ViewBag.dropdownItem)
-                                            {
+                                             {
                                                 <option value="@options">@options</option>
-                                            }
+                                             }
                                         </select>
                                     </div>
                                     <!-- Modal footer -->
                                     <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary">Save Spot</button>
+                                        <button type="submit" class="btn btn-primary" id="SaveBtn">Save Spot</button>
                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
@@ -139,191 +144,75 @@
                         </div>
                     </div>
                 </div>
-             }
-                <div class="container-fluid d-flex flex-row w-100 h-100 align-items-center mt-5" id="MapAndList">
-                    <div class="card col-5" id="UserSpotListCard">
-                        @using (Html.BeginForm("Delete", "UserDashboard", FormMethod.Post))
-                        {
-                            @Html.ValidationSummary(true)
+            }
+            <div class="container-fluid d-flex flex-row w-100 h-100 align-items-center mt-5" id="MapAndList">
+                <div class="card col-5" id="UserSpotListCard">
+                    @using (Html.BeginForm("Delete", "UserDashboard", FormMethod.Post))
+                    {
+                        @Html.ValidationSummary(true)
 
-                            <fieldset>
-                                <table class="table table-hover" id="LocInfoList">
-                                    @Html.AntiForgeryToken()
-                                    <thead>
-                                        <tr style="width: 100%">
-                                            <th style="width: 20%">
-                                                <label class="text-center mt-3">Location Name</label>
-                                            </th>
-                                            <th style="width: 20%">
-                                                <label class="text-center">Location Description</label>
-                                            </th>
-                                            <th style="width: 20%">
-                                                <label class="text-center">Location Type</label>
-                                            </th>
-                                            <th id="lat" style="width: 20%">
-                                                <label class="text-center">Latitude</label>
-                                            </th>
-                                            <th id="lng" style="width: 20%">
-                                                <label class="text-center">Longitude</label>
-                                            </th>
+                        <fieldset>
+                            <table class="table table-hover" id="LocInfoList">
+                                @Html.AntiForgeryToken()
+                                <thead>
+                                    <tr style="width: 100%">
+                                        <th style="width: 20%">
+                                            <label class="text-center mt-3">Location Name</label>
+                                        </th>
+                                        <th style="width: 20%">
+                                            <label class="text-center">Location Description</label>
+                                        </th>
+                                        <th style="width: 20%">
+                                            <label class="text-center">Location Type</label>
+                                        </th>
+                                        <th id="lat" style="width: 20%">
+                                            <label class="text-center">Latitude</label>
+                                        </th>
+                                        <th id="lng" style="width: 20%">
+                                            <label class="text-center">Longitude</label>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (LocationsModel item in ViewBag.UserLocations)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.LocationName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.LocationDescription)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.LocationType)
+                                            </td>
+                                            <td id="lat">
+                                                @Html.DisplayFor(modelItem => item.Latitude)
+                                            </td>
+                                            <td id="lng">
+                                                @Html.DisplayFor(modelItem => item.Longitude)
+                                            </td>
+                                            <td class="btn-group-sm">
+                                                <button type="button" class="btn btn-warning" asp-action="Edit" asp-controller="UserDashboard" asp-route-id="@item.ID">Edit</button>
+                                                <button type="button" class="btn btn-info" asp-action="Details" asp-controller="UserDashboard" asp-route-id="@item.ID">Details</button>
+                                                <button type="submit" class="btn btn-danger" asp-action="Delete" asp-controller="UserDashboard" asp-route-id="@item.ID">Delete</button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (LocationsModel item in ViewBag.UserLocations)
-                                         {
-                                            <tr>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.LocationName)
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.LocationDescription)
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.LocationType)
-                                                </td>
-                                                <td id="lat">
-                                                    @Html.DisplayFor(modelItem => item.Latitude)
-                                                </td>
-                                                <td id="lng">
-                                                    @Html.DisplayFor(modelItem => item.Longitude)
-                                                </td>
-                                                <td class="btn-group-sm">
-                                                    <button type="button" class="btn btn-warning" asp-action="Edit" asp-controller="UserDashboard" asp-route-id="@item.ID">Edit</button>
-                                                    <button type="button" class="btn btn-info" asp-action="Details" asp-controller="UserDashboard" asp-route-id="@item.ID">Details</button>
-                                                    <button type="submit" class="btn btn-danger" asp-action="Delete" asp-controller="UserDashboard" asp-route-id="@item.ID">Delete</button>
-                                                </td>
-                                            </tr>
-                                         }
-                                    </tbody>
-                                </table>
-                            </fieldset>
-
-
-                         }
-                    </div>
-                    <div class="col-7 w-100" style="padding-left: 0; margin-right: 0">
-                        <div class="card" id="map"></div>
-                    </div>
+                                     }
+                                </tbody>
+                            </table>
+                        </fieldset>
+                     }
                 </div>
+                <div class="col-7 w-100" style="padding-left: 0; margin-right: 0">
+                    <div class="card" id="map"></div>
+                </div>
+            </div>
         </div>
     </header>
 
 </body>
 </html>
-
-<!-- Google Maps Api -->
-<script>
-        var map, infoWindow;
-
-function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: -34.397, lng: 150.644 },
-        zoom: 12
-    });
-    infoWindow = new google.maps.InfoWindow;
-    marker = new google.maps.Marker;
-    var markers = [];
-
-    //Retrieve markers from database
-    $.get("@Url.Action("GetUserMarkers", "UserDashboard")", function (data, status) {
-        console.log(data)
-        for (i = 0; i < data.length; i++) {
-            markers.push(new google.maps.Marker({
-                position: { lat: data[i].latitude, lng: data[i].longitude },
-                map: map,
-                infoWindow: "'" + data[i].locationName + "'"
-            }));
-
-            /*Google Map Marker Click Function*/
-            google.maps.event.addListener(markers[i], 'click', (function (event) {
-                console.log(event.latLng.lat() + ", " + event.latLng.lng());
-                /*Bootstrap Modal Pop Up Open Code*/
-                $("#spotInfoModal").modal('toggle');
-                $("#Latitude").val(event.latLng.lat());
-                $("#Longitude").val(event.latLng.lng());
-
-            }));
-        }
-    });
-
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            var accuracy = position.coords.accuracy;
-            var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-
-            marker = new google.maps.Marker({
-                position: pos,
-                map: map,
-                title: 'Your Location!'
-            });
-
-
-            /*Google Map Marker Click Function*/
-            google.maps.event.addListener(marker, 'click', (function (marker) {
-                return function () {
-                    /*Bootstrap Modal Pop Up Open Code*/
-                    $("#spotInfoModal").modal('toggle');
-                    $("#Latitude").val(position.coords.latitude);
-                    $("#Longitude").val(position.coords.longitude);
-                    //$("#Latitude").val(position.coords.latitude);
-                    //$("#Longitude").val(position.coords.longitude);
-                }
-            })(marker));
-
-            /*Google Map Place Marker On Map Click Function*/
-            google.maps.event.addListener(map, 'click', function (event) {
-                console.log(event.latLng.lat() + ", " + event.latLng.lng());
-                /*Bootstrap Modal Pop Up Open Code*/
-                $("#spotInfoModal").modal('toggle');
-                $("#Latitude").val(event.latLng.lat());
-                $("#Longitude").val(event.latLng.lng());
-
-                /*Only Save Marker If User Clicks Save Btn Function*/
-                google.maps.event.addDomListener(document.getElementById('SaveBtn'), 'click', function (event) {
-                    var marker = new google.maps.Marker({
-                        position: event.latLng,
-                        map: map,
-                        title: 'new new!'
-                    });
-                });
-
-                /*Opens Modal After New Spot Added*/
-                google.maps.event.addListener(marker, 'click', (function (marker) {
-                    return function () {
-                        /*Bootstrap Modal Pop Up Open Code*/
-                        $("#spotInfoModal").modal('toggle');
-                        $("#Latitude").val(event.latLng.lat());
-                        $("#Longitude").val(event.latLng.lng());
-                    }
-                })(marker));
-            });
-
-            map.setCenter(pos);
-        }, function () {
-            handleLocationError(true, marker, map.getCenter());
-        });
-    } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, marker, map.getCenter());
-    }
-}
-
-function handleLocationError(browserHasGeolocation, marker, pos) {
-    marker.setPosition(pos);
-    marker.setContent(browserHasGeolocation ?
-        'Error: The Geolocation service failed.' :
-        'Error: Your browser doesn\'t support geolocation.');
-    marker.open(map);
-}
-
-</script>
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpEQRDLXDEV7pISA-Xb5_frat9EhMJVfc&callback=initMap">
-</script>
 <!-- Bootstrap core JavaScript -->
 <script src="~/vendor/jquery/jquery.min.js"></script>
 <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -333,3 +222,142 @@ function handleLocationError(browserHasGeolocation, marker, pos) {
 
 <!-- Custom scripts for this template -->
 <script src="~/js/grayscale.min.js"></script>
+<!-- Google Maps Api -->
+<script>
+var map;
+var infoWindow;
+var mouseOverInfoWindow = false;
+var timeoutID;
+var markerData = [];
+var infoWindowContent;
+var name;
+var desciption;
+
+function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 12
+    });
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            var accuracy = position.coords.accuracy;
+            var pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            marker = new google.maps.Marker({
+                position: pos,
+                map: map,
+                title: 'Your Location!'
+            });
+            addMarkerListeners(marker);
+            map.setCenter(pos);
+
+        }, function () {
+            handleLocationError(true, marker, map.getCenter());
+        });
+    } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, marker, map.getCenter());
+    }
+    createMarkers(markerData);
+    createInfoWindow();
+}
+function handleLocationError(browserHasGeolocation, marker, pos) {
+    marker.setPosition(pos);
+    marker.setContent(browserHasGeolocation ?
+        'Error: The Geolocation service failed.' :
+        'Error: Your browser doesn\'t support geolocation.');
+    marker.open(map);
+}
+function createMarkers(markerData) {
+//Retrieve markers from database
+    $.get("@Url.Action("GetUserMarkers", "UserDashboard")", function (data, status) {
+        console.log(data)
+        for (i = 0; i < data.length; i++) {
+            markerData.push(data[i]);
+        }
+        markerData.forEach(function (item) {
+            var marker = new google.maps.Marker({
+                position: { lat: item.latitude, lng: item.longitude },
+                map: map,
+                title: item.locationName,
+                infoWindowContent: item.locationName + "<br>" + item.locationDescription,
+                name: item.locationName,
+                desciption: item.locationDescription
+            });
+
+            addMarkerListeners(marker, item.infoWindowContent);
+        });
+    });
+}
+
+function createInfoWindow() {
+  var infoWindowOptions = {
+    maxWidth: 300,
+    disableAutoPan: true
+  };
+
+  infoWindow = new google.maps.InfoWindow(infoWindowOptions);
+}
+
+function addMarkerListeners(marker, infoWindowContent) {
+    marker.addListener('click', function (marker) {
+        $("#spotInfoModal").modal('toggle');
+        $("#Latitude").val(this.position.lat);
+        $("#Longitude").val(this.position.lng);
+        $("#locationName").val(this.name);
+        $("#locationDescription").val(this.desciption);
+    });
+    map.addListener('click', function (event) {
+        $("#spotInfoModal").modal('toggle');
+        $("#Latitude").val(event.latLng.lat());
+        $("#Longitude").val(event.latLng.lng());
+    });
+    //saves new location on 'save' button click
+    map.addListener(document.getElementById('SaveBtn'), 'click', function (event) {
+        marker = new google.maps.Marker({
+            position: event.latLng,
+            map: map,
+        });
+    });
+    marker.addListener('mouseover', function() {
+        if (timeoutID) clearTimeout(timeoutID);
+        openInfoWindow(marker, this.infoWindowContent);
+    });
+    marker.addListener('mouseout', function() {
+        timeoutID = setTimeout(function() {
+          if (!mouseOverInfoWindow) {
+            closeInfoWindow();
+          }
+        }, 400);
+    });
+}
+
+function openInfoWindow(marker, infoWindowContent) {
+  infoWindow.setContent(infoWindowContent);
+  infoWindow.open(map, marker);
+  addOpenInfoWindowListeners();
+}
+
+function closeInfoWindow() {
+  infoWindow.close();
+}
+
+function addOpenInfoWindowListeners() {
+  var infoWindowElement = document.querySelector('.gm-style .gm-style-iw').parentNode;
+
+  infoWindowElement.addEventListener('mouseleave', function() {
+    closeInfoWindow();
+    mouseOverInfoWindow = false;
+  });
+
+  infoWindowElement.addEventListener('mouseenter', function() {
+    mouseOverInfoWindow = true;
+  });
+}
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpEQRDLXDEV7pISA-Xb5_frat9EhMJVfc&callback=initMap">
+</script>

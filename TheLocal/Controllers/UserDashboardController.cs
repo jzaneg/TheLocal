@@ -23,6 +23,8 @@ namespace TheLocal.Views.Home
             dbContext = applicationDbContext;
         }
         //=====SESSION=====//
+        [HttpPost, ActionName("AddLocations")]
+        [ValidateAntiForgeryToken]
         public IActionResult AddLocations(int ID, string UserID, string LocationName, string LocationDescription, string LocationType, decimal Latitude, decimal Longitude)
         {
             LocationsModel l = new LocationsModel();
@@ -51,6 +53,7 @@ namespace TheLocal.Views.Home
             }
 
             ViewBag.dropdownItem = new List<string>();
+            ViewBag.dropdownItem.Add("Select Spot Type");
             ViewBag.dropdownItem.Add("Bars/Alcohol");
             ViewBag.dropdownItem.Add("Beach");
             ViewBag.dropdownItem.Add("Food");
@@ -67,11 +70,9 @@ namespace TheLocal.Views.Home
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int ID)
         {
-            //LocationsModel l = new LocationsModel();
             LocationsModel Location = dbContext.Locations.Find(ID);
             
             dbContext.Locations.Remove(Location);
-            //dbcontext.savechanges()
             dbContext.SaveChanges();
             return RedirectToAction("UserDashboard", "UserDashboard");
         }
@@ -93,12 +94,14 @@ namespace TheLocal.Views.Home
                 HttpContext.Session.SetString("userid", loggedInUser.Id);
             }
             List<LocationsModel> userMarkers = dbContext.Locations.Where(l => l.UserID == loggedInUser.Id).ToList();
+            
             return Json(userMarkers);
         }
         public IActionResult PopulateViewSpots()
         {
-            ViewBag.Locations = dbContext.Locations.ToList();
-            return View();
+            //ViewBag.Locations = dbContext.Locations.ToList();
+            List<LocationsModel> spotMarkers = dbContext.Locations.ToList();
+            return Json(spotMarkers);
         }
     }
 }

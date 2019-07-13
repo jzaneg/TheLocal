@@ -1,5 +1,5 @@
 # The Local
-## Application Specifiacations and Change Log
+## Application Specifications and Change Log
 
 ##### Title: The Local 
 ##### Author: Zane Garner
